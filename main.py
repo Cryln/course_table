@@ -1,10 +1,33 @@
-from os import name
-from ics import Calendar, Event
-from lxml import etree
+# -*- encoding: utf-8 -*-
+'''
+@File    :   main.py
+@Time    :   2021/01/27 22:58:35
+@Author  :   Geralt 
+@Version :   1.0
+@Contact :   superj0529@gmail.com
+'''
 import datetime
 import re
+from os import P_OVERLAY, name
 
-FIRST_DAY = datetime.datetime(year=2021,month=2,day=28,hour=0,minute=0,second=00)
+from ics import Calendar, Event
+from lxml import etree
+
+class UTC(datetime.tzinfo):
+    """UTC"""
+    def __init__(self,offset = 0):
+        self._offset = offset
+
+    def utcoffset(self, dt):
+        return datetime.timedelta(hours=self._offset)
+
+    def tzname(self, dt):
+        return "UTC +%s" % self._offset
+
+    def dst(self, dt):
+        return datetime.timedelta(hours=self._offset)
+
+FIRST_DAY = datetime.datetime(year=2021,month=2,day=28,hour=0,minute=0,second=00,tzinfo=UTC(8))
 
 rule = (((8,30),(9,20)),     #0
         ((9,30),(10,20)),    #1
@@ -43,16 +66,16 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
         cName = re.compile(r"^([\w ]+)\(")
         cNum = re.compile(r"\(([A-Za-z]+[0-9]+)\)")
         room =  re.compile(r",(\w+)\(")
-        hanzi = re.compile(r"\(([\w ]+)\)")
-        routine = re.compile(r"\(([\w\S]+),")
+        hanzi = re.compile(r"\(([\u4e00-\u9fa5]+)\)")
+        routine = re.compile(r"([0-9]+-[0-9]+[单|双]*)")
         c_info = {}
 
         c_info['CourseName'] = defaultValue(cName.findall(detail[i]),"",0)
         c_info['CourseNumber'] = defaultValue(cNum.findall(detail[i]),"",0)
-        c_info['Teacher'] = defaultValue(hanzi.findall(detail[i]),"",1)
+        c_info['Teacher'] = defaultValue(hanzi.findall(detail[i]),"",0)
         c_info['Campus'] = defaultValue(hanzi.findall(detail[i+1]),"浑南校区",0)
         c_info['Room'] = defaultValue(room.findall(detail[i+1]),"",0)
-        c_info['Routine'] = defaultValue(routine.findall(detail[i+1]),"1-17",0)
+        c_info['Routine'] = defaultValue(routine.findall(detail[i+1]),"",0)
 
         Rt = c_info['Routine'].strip('单双').split('-')
 
@@ -65,7 +88,7 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
         elif('双' in c_info['Routine']):
             Rtlist = [x for x in range(wa if wa%2==0 else wa+1 ,wb+1,2)]
         else:
-            Rtlist = [x for x in range(wa ,wb+1,2)]
+            Rtlist = [x for x in range(wa ,wb+1,1)]
 
         for w in Rtlist:
             courseStartTime = FIRST_DAY+datetime.timedelta(
@@ -81,9 +104,10 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
                 name=c_info['CourseName'],
                 begin=courseStartTime,
                 end=courseEndTime,
-                location=c_info['Campus']+' '+c_info['Room'],
+                location=c_info['Room']+' '+c_info['Campus'],
                 description=c_info['CourseName']+'：'+c_info['CourseNumber']+'  '+'Teacher：'
                 +c_info['Teacher']
+
 
             )
             mycal.events.add(calEvent)
@@ -115,9 +139,7 @@ if __name__ == "__main__":
         content = dict(item.attrib)
         if 'title' in content.keys():
             makeEvent(mycal,item)
-
+    
     with open('my.ics', 'w', encoding='utf-8') as my_file:
         my_file.writelines(mycal)
     
-        
-
