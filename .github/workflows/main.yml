@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: 3.7
       - name: 'Install lib'
-        run: pip install lxml
+        run: pip install lxml && pip install ics
       - name: 'Working'
         run: python main.py ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }}
 
