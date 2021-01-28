@@ -57,7 +57,7 @@ def defaultValue(ans:list,default:str,index:int)->str:
 
 
 
-def makeEvent(calendar:Calendar,event:(etree._Element)):
+def getEvent(calendar:Calendar,event:(etree._Element)):
 
     
     info = getinfo(event)
@@ -109,10 +109,8 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
                 location=c_info['Room']+' '+c_info['Campus'],
                 description=c_info['CourseName']+'：'+c_info['CourseNumber']+'  '+'Teacher：'
                 +c_info['Teacher']
-
-
             )
-            mycal.events.add(calEvent)
+            calendar.events.add(calEvent)
 
             
 
@@ -125,26 +123,81 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
             #     LOCATION= c_info['Campus']+' '+c_info['Room'])
 
 
+
+def makeEvent(calendar:Calendar,html):
+    root = etree.HTML(html)
+    script = root.xpath('//*[@id="ExportA"]/script')
+    index = re.finditer("var teachers =",script[0].text)
+    cindex = []
+    for i in index:
+        cindex.append(i.span())
+    cindex.append((-1,-1))
+    courses = [script[0].text[cindex[i][0]:cindex[i+1][0]] for i in range(len(cindex)-1)]
+
+    teacherName = re.compile(r"name:\"([\u4e00-\u9fa5]+)\",lab")
+    teacherID = re.compile(r"\[\{id:(\d+),name")
+    activity = re.compile(r"activity = new TaskActivity\(([\s\S]+)\);")
+    week = re.compile(r"index =(\d+)\*unitCount\+\d+;") #index =3*unitCount+5;
+    classNumber = re.compile(r"index =\d+\*unitCount\+(\d+);") #index =3*unitCount+5;
+
+    for course in courses:
+        info = {}
+        info['teacherName'] = teacherName.findall(course)[0]
+        info['teacherID'] = teacherID.findall(course)[0]
+        activity_ = activity.findall(course)[0].split(',')
+        info['courseName'] = activity_[5]
+        info['courseLoc'] = activity_[7]
+        onehot = activity_[8].strip('"')
+        routine = []
+        for w in range(len(onehot)):
+            if(onehot[w]=='1'):
+                routine.append(w+1)
+        weekday = week.findall(course)
+        classNum = classNumber.findall(course)
+
+        for w in routine:
+            for i in range(len(weekday)):
+                courseStartTime = FIRST_DAY+datetime.timedelta(
+                    days=(w-1)*7+(weekday[i]+1)%7,
+                    hours=rule[classNum][0][0],
+                    minutes=rule[classNum][0][1])
+                courseEndTime = FIRST_DAY+datetime.timedelta(
+                    days=(w-1)*7+(info[0]+1)%7,
+                    hours=rule[classNum][1][0],
+                    minutes=rule[classNum][1][1])
+                calEvent = Event(
+                    name=info['courseName'],
+                    begin=courseStartTime,
+                    end=courseEndTime,
+                    location=info['courseLoc'],
+                    description=info['courseName']+'  '+'Teacher：'
+                    +info['teacherName']
+                )
+                calendar.events.add(calEvent)
+
+
+
+
     
 
 if __name__ == "__main__":
 
     
-    #html = getHTML(sys.argv[0],sys.argv[1])
-
-    htmlf=open(sys.argv[1],'r',encoding="utf-8")
-    html=htmlf.read() 
-
-    root = etree.HTML(html)  
-    tds = root.xpath('//td[contains(@id,"TD")]')
-
-    mycal = Calendar()
-
-    for item in tds:
-        content = dict(item.attrib)
-        if 'title' in content.keys():
-            makeEvent(mycal,item)
     
+    html = getHTML(sys.argv[0],sys.argv[1])
+    mycal = Calendar()
+    #htmlf=open(sys.argv[1],'r',encoding="utf-8")
+    #html=htmlf.read() 
+
+    #root = etree.HTML(html)  
+    #tds = root.xpath('//td[contains(@id,"TD")]')
+
+    # for item in tds:
+    #     content = dict(item.attrib)
+    #     if 'title' in content.keys():
+    #         getEvent(mycal,item)
+    makeEvent(mycal,html)
+
     with open('my.ics', 'w', encoding='utf-8') as my_file:
         my_file.writelines(mycal)
     
