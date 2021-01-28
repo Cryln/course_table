@@ -7,7 +7,9 @@
 @Contact :   superj0529@gmail.com
 '''
 import datetime
+import sys
 import re
+from getHTML import getHTML
 from os import P_OVERLAY, name
 
 from ics import Calendar, Event
@@ -127,7 +129,10 @@ def makeEvent(calendar:Calendar,event:(etree._Element)):
 
 if __name__ == "__main__":
 
-    htmlf=open('ct.html','r',encoding="utf-8")
+    
+    #html = getHTML(sys.argv[0],sys.argv[1])
+
+    htmlf=open(sys.argv[1],'r',encoding="utf-8")
     html=htmlf.read() 
 
     root = etree.HTML(html)  
