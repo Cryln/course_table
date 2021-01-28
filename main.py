@@ -182,6 +182,7 @@ def makeEvent(calendar:Calendar,html):
 if __name__ == "__main__":
 
 
+    print("let's do it! ")
     html = getHTML(sys.argv[1],sys.argv[2])
     mycal = Calendar()
     #htmlf=open(sys.argv[1],'r',encoding="utf-8")
@@ -194,8 +195,10 @@ if __name__ == "__main__":
     #     content = dict(item.attrib)
     #     if 'title' in content.keys():
     #         getEvent(mycal,item)
+    print("generating ics file...")
     makeEvent(mycal,html)
 
     with open('my.ics', 'w', encoding='utf-8') as my_file:
         my_file.writelines(mycal)
+    print("done!")
     

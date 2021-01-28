@@ -43,7 +43,7 @@ def getHTML(mid,ps):
     decode_txt2 = response2.read().decode()
     ids_p = re.compile(r"bg\.form\.addInput\(form,\"ids\",\"(\w.*?)\"")
     ids = ids_p.findall(decode_txt2)[0]
-
+    print("login successfully!")
     formdata={
     'ids':ids,
     'ignoreHead':'1',
@@ -53,6 +53,7 @@ def getHTML(mid,ps):
     'startWeek':''
     }
     postdata2 = urllib.parse.urlencode(formdata).encode("utf-8")
+    print("receiving courseTable page...")
     response3 = opener.open('http://219.216.96.4/eams/courseTableForStd!courseTable.action', postdata2)
     print(response3.status)
     return response3.read().decode()
