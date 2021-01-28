@@ -151,20 +151,20 @@ def makeEvent(calendar:Calendar,html):
         routine = []
         for w in range(len(onehot)):
             if(onehot[w]=='1'):
-                routine.append(w+1)
+                routine.append(w)
         weekday = week.findall(course)
         classNum = classNumber.findall(course)
 
         for w in routine:
             for i in range(len(weekday)):
                 courseStartTime = FIRST_DAY+datetime.timedelta(
-                    days=(w-1)*7+(weekday[i]+1)%7,
-                    hours=rule[classNum][0][0],
-                    minutes=rule[classNum][0][1])
+                    days=(w-1)*7+(int(weekday[i])+1)%7,
+                    hours=rule[int(classNum[i])][0][0],
+                    minutes=rule[int(classNum[i])][0][1])
                 courseEndTime = FIRST_DAY+datetime.timedelta(
-                    days=(w-1)*7+(info[0]+1)%7,
-                    hours=rule[classNum][1][0],
-                    minutes=rule[classNum][1][1])
+                    days=(w-1)*7+(int(weekday[i])+1)%7,
+                    hours=rule[int(classNum[i])][1][0],
+                    minutes=rule[int(classNum[i])][1][1])
                 calEvent = Event(
                     name=info['courseName'],
                     begin=courseStartTime,
@@ -182,8 +182,7 @@ def makeEvent(calendar:Calendar,html):
 
 if __name__ == "__main__":
 
-    
-    
+
     html = getHTML(sys.argv[0],sys.argv[1])
     mycal = Calendar()
     #htmlf=open(sys.argv[1],'r',encoding="utf-8")
