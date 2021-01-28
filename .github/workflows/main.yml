@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: test
           body: file://mail.md
-          to: 1969246812@qq.com
+          to: ${{ secrets.MAIL_ADDR }}
           from: GitHub Actions
           content_type: text/plain
           attachments: ./my.ics
