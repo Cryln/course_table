@@ -10,7 +10,6 @@ import datetime
 import sys
 import re
 from getHTML import getHTML
-from os import P_OVERLAY, name
 
 from ics import Calendar, Event
 from lxml import etree
@@ -183,7 +182,7 @@ def makeEvent(calendar:Calendar,html):
 if __name__ == "__main__":
 
 
-    html = getHTML(sys.argv[0],sys.argv[1])
+    html = getHTML(sys.argv[1],sys.argv[2])
     mycal = Calendar()
     #htmlf=open(sys.argv[1],'r',encoding="utf-8")
     #html=htmlf.read() 
