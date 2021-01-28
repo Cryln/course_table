@@ -27,7 +27,7 @@ jobs:
       - name: 'Install lib'
         run: pip install lxml
       - name: 'Working'
-        run: python3 main.py ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }}
+        run: python main.py ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }}
 
       - name: 'Send mail'
         uses: dawidd6/action-send-mail@master
