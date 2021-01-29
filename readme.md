@@ -17,10 +17,39 @@
 
 4. 邮件接收方，邮箱地址：EMAIL_ADDR
 
-   如下，为部分./.github/workflows/main.yml 的内容
-
+   如下，为./.github/workflows/main.yml 的内容
+5. Actions 的执行需要触发条件，在 on: 语句下设置，这里设置的是，当main分支发生push或者pull_request。 还有其他触发条件，For more information, see "[Events that trigger workflows](https://docs.github.com/articles/events-that-trigger-workflows)."
 
 ``` yml
+# This is a basic workflow to help you get started with Actions
+
+name: NEU CourseTable Email Bot
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  emailbot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: 'Set up Python'
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: 'Install lib'
+        run: pip install lxml && pip install ics
+      - name: 'Working'
         run: python main.py ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }}
 
       - name: 'Send mail'
