@@ -43,10 +43,22 @@
 
 1、将【安全性较低的应用程式取权限】设置为启用
 进入网页[https://www.google.com/settin...](https://www.google.com/settings/security/lesssecureapps)，设置为【启用】。
+
 2、解除人机验证锁定
 进入网页[https://accounts.google.com/b...](https://accounts.google.com/b/0/DisplayUnlockCaptcha)，点击【继续】。
 
 ​	不同的邮箱服务都会有Anti-Spamming，都需要设置一下，接收方还可以添加邮箱地址白名单，来防止误判。最后来个效果图。
+
+当然，你可能不需要邮箱服务，你也可以clone到本地使用
+
+```shell
+
+python main.py [学号] [密码]
+#例如：
+python main.py 20180001 password123
+
+```
+然后会生成并覆盖my.ics,将其导入日历即可。
 
 ![](https://user-images.githubusercontent.com/49862786/106231771-6ad00480-622d-11eb-99a3-80517b5c07f4.jpg)
 
