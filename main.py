@@ -27,8 +27,8 @@ class UTC(datetime.tzinfo):
 
     def dst(self, dt):
         return datetime.timedelta(hours=self._offset)
-
-FIRST_DAY = datetime.datetime(year=2021,month=2,day=28,hour=0,minute=0,second=00,tzinfo=UTC(8))
+# You must define the first day of the semester (the sunday of first week)
+FIRST_DAY = datetime.datetime(year=2021,month=9,day=5,hour=0,minute=0,second=00,tzinfo=UTC(8))
 
 rule = (((8,30),(9,20)),     #0
         ((9,30),(10,20)),    #1

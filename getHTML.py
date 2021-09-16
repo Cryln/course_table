@@ -47,7 +47,7 @@ def getHTML(mid,ps):
     formdata={
     'ids':ids,
     'ignoreHead':'1',
-    'semester.id':'48',
+    'semester.id':'56',
     'setting.kind':'std',
     'showPrintAndExport':'1',
     'startWeek':''
